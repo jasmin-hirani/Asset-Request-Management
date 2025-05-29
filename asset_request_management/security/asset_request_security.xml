@@ -1,0 +1,24 @@
+<odoo>
+
+    <record id="asset_request_rule_admin" model="ir.rule">
+        <field name="name">Asset Request: Admin</field>
+        <field name="model_id" ref="model_asset_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+    <record id="asset_request_rule_purchase" model="ir.rule">
+        <field name="name">Asset Request: Purchase User Requests in Purchase</field>
+        <field name="model_id" ref="model_asset_request"/>
+        <field name="domain_force">
+            ['|', '|', '|',
+            ('purchase_stage', '=', 'to_purchase'),
+            ('purchase_stage', '=', 'po_created'),
+            ('purchase_stage', '=', 'rejected'),
+            ('purchase_stage', '=', 'done')
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,22 @@
+<odoo>
+    <menuitem
+            id="menu_asset_request_root"
+            name="Asset Requests"
+            sequence="10"/>
+
+    <menuitem
+            id="menu_my_requests"
+            name="My Requests"
+            parent="menu_asset_request_root"
+            action="action_asset_request_my"
+            sequence="10"
+            groups="base.group_user"/>
+
+    <menuitem
+            id="menu_all_requests"
+            name="All Requests"
+            parent="menu_asset_request_root"
+            action="action_asset_request_all"
+            sequence="20"
+            groups="stock.group_stock_user,purchase.group_purchase_user,base.group_system"/>
+</odoo>

@@ -1,0 +1,151 @@
+<odoo>
+    <record id="action_asset_request_my" model="ir.actions.act_window">
+        <field name="name">My Requests</field>
+        <field name="res_model">asset.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('request_user_id', '=', uid)]</field>
+    </record>
+
+    <record id="action_asset_request_all" model="ir.actions.act_window">
+        <field name="name">All Requests</field>
+        <field name="res_model">asset.request</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_asset_request_tree" model="ir.ui.view">
+        <field name="name">asset.request.tree</field>
+        <field name="model">asset.request</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="request_user_id"/>
+                <field name="request_date"/>
+                <field name="internal_stage"/>
+                <field name="inventory_stage"/>
+                <field name="purchase_stage"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_asset_request_form" model="ir.ui.view">
+        <field name="name">asset.request.form</field>
+        <field name="model">asset.request</field>
+        <field name="arch" type="xml">
+            <form string="Asset Request">
+
+                <header>
+                    <field name="ui_is_inventory_user" invisible="1"/>
+                    <field name="ui_is_purchase_user" invisible="1"/>
+                    <field name="ui_show_internal_statusbar" invisible="1"/>
+
+                    <!-- Buttons for Internal User -->
+                    <button name="action_submit" type="object" string="Submit"
+                            invisible="(internal_stage != 'draft') or (request_user_id != uid)"
+                            class="btn-primary"/>
+
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="(internal_stage == 'rejected' or internal_stage == 'done') or (request_user_id != uid)"
+                            class="btn-danger"/>
+
+                    <!-- Buttons for Inventory User -->
+                    <button name="action_create_internal_transfer" type="object" string="Create Transfer"
+                            groups="stock.group_stock_user"
+                            invisible="inventory_stage != 'available_request'"
+                            class="btn-warning"/>
+
+                    <button name="action_transfer_done" type="object" string="Transfer Completed"
+                            groups="stock.group_stock_user"
+                            invisible="inventory_stage != 'available_request'"
+                            class="btn-success"/>
+
+                    <button name="action_create_po" type="object" string="Create Purchase Order"
+                            groups="stock.group_stock_user"
+                            invisible="inventory_stage != 'not_available'"
+                            class="btn-warning"/>
+
+                    <button name="action_product_unavailable" type="object" string="Product Unavailable"
+                            groups="stock.group_stock_user"
+                            invisible="inventory_stage != 'available_request'"
+                            class="btn-primary"/>
+
+                    <button name="action_product_received" type="object" string="Product Received"
+                            groups="stock.group_stock_user"
+                            invisible="inventory_stage != 'purchase_done'"
+                            class="btn-success"/>
+
+                    <button name="action_inventory_reject" type="object" string="Reject (by Inventory)"
+                            groups="stock.group_stock_user"
+                            invisible="inventory_stage == 'rejected' or inventory_stage == 'done' or not inventory_stage"
+                            class="btn-danger"/>
+
+
+                    <!-- Buttons for Purchase User -->
+                    <button name="action_purchase_create_po" type="object" string="Create Purchase order"
+                            groups="purchase.group_purchase_user"
+                            invisible="purchase_stage != 'to_purchase'"
+                            class="btn-primary"/>
+
+                    <button name="action_po_done" type="object" string="PO Done"
+                            groups="purchase.group_purchase_user"
+                            invisible="purchase_stage != 'po_created'"
+                            class="btn-success"/>
+
+                    <button name="action_purchase_reject" type="object" string="Reject (by Purchase)"
+                            groups="purchase.group_purchase_user"
+                            invisible="purchase_stage == 'rejected' or purchase_stage == 'done' or not purchase_stage"
+                            class="btn-danger"/>
+
+
+                    <!-- Statusbar for Inventory User -->
+                    <field name="inventory_stage" widget="statusbar"
+                           statusbar_visible="available_request,not_available,in_purchase,internal_transfer,rejected,done"
+                           invisible="not ui_is_inventory_user"
+                           groups="stock.group_stock_user"/>
+
+                    <!-- Statusbar for Purchase User -->
+                    <!-- Visible if current user is purchase_user AND NOT inventory_user -->
+                    <field name="purchase_stage" widget="statusbar"
+                           statusbar_visible="to_purchase,po_created,rejected,done"
+                           invisible="not ui_is_purchase_user or ui_is_inventory_user"
+                           groups="purchase.group_purchase_user"/>
+
+                    <!-- Statusbar for the Requester (general users) -->
+                    <!-- Visible if ui_show_internal_statusbar is True (meaning not inventory and not purchase) -->
+                    <field name="internal_stage" widget="statusbar"
+                           statusbar_visible="draft,submitted,rejected,done"
+                           invisible="not ui_show_internal_statusbar"
+                           groups="base.group_user"/>
+
+                </header>
+                <sheet>
+                    <field name="ui_is_inventory_user" invisible="1"/>
+                    <field name="ui_is_purchase_user" invisible="1"/>
+                    <field name="ui_show_internal_statusbar" invisible="1"/>
+
+                    <group>
+                        <field name="request_user_id" readonly="1"/>
+                        <field name="request_date" readonly="1"/>
+                        <field name="reason" readonly="internal_stage != 'draft'"/>
+                    </group>
+                    <notebook>
+                        <page string="Products">
+                            <field name="request_line_ids"
+                                   readonly="internal_stage != 'draft'">
+                                <list string="Products Requested" editable="bottom">
+                                    <field name="product_id" required="1"/>
+                                    <field name="quantity" required="1"/>
+                                    <field name="product_uom_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+
+                    <group string="Stages">
+                        <field name="internal_stage" readonly="1"/>
+                        <field name="inventory_stage" readonly="1"/>
+                        <field name="purchase_stage" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_asset_request_user,asset.request.user,model_asset_request,base.group_user,1,1,1,0
+access_asset_request_stock_user,asset.request.stock.user,model_asset_request,stock.group_stock_user,1,1,1,1
+access_asset_request_purchase_user,asset.request.purchase.user,model_asset_request,purchase.group_purchase_user,1,1,1,1
+access_asset_request_manager,asset.request.manager,model_asset_request,base.group_system,1,1,1,1
+
+access_asset_request_line_user,asset.request.line.user,model_asset_request_line,base.group_user,1,1,1,0
+access_asset_request_line_stock_user,asset.request.line.stock.user,model_asset_request_line,stock.group_stock_user,1,1,1,1
+access_asset_request_line_purchase_user,asset.request.line.purchase.user,model_asset_request_line,purchase.group_purchase_user,1,1,1,1
+access_asset_request_line_manager,asset.request.line.manager,model_asset_request_line,base.group_system,1,1,1,1
